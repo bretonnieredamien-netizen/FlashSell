@@ -2,152 +2,173 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FlashSell - Vinted Booster</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Poppins', sans-serif; }
-        /* Animation pour le chargement */
+        body { font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         .loader {
-            border: 3px solid #f3f3f3; /* Light grey */
-            border-top: 3px solid #fff; /* White */
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid #fff;
             border-radius: 50%;
             width: 24px;
             height: 24px;
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        /* Effet d'apparition douce */
-        .fade-in { animation: fadeIn 0.5s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; opacity: 0; transform: translateY(10px); }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-50 to-indigo-50 min-h-screen flex items-center justify-center p-6">
+<body class="bg-gray-50 min-h-screen flex flex-col items-center justify-center p-4">
 
-    <div class="bg-white w-full max-w-[500px] rounded-3xl shadow-2xl border border-white/50 backdrop-blur-sm overflow-hidden transition-all">
+    <div class="bg-white w-full max-w-[500px] rounded-[2rem] shadow-xl overflow-hidden border border-gray-100">
         
-        <div class="p-8 text-center pb-4">
-            <h1 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-500 inline-block">
-                ⚡ FlashSell
+        <div class="pt-8 pb-4 text-center px-6">
+            <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">
+                ⚡ Flash<span class="text-indigo-600">Sell</span>
             </h1>
-            <p class="text-gray-500 mt-3 text-lg font-medium">Ton assistant de vente IA</p>
+            <p class="text-gray-400 text-sm mt-2 font-medium">Boost tes ventes Vinted avec l'IA</p>
         </div>
 
-        <div class="px-8 pb-8 space-y-6">
+        <div class="p-6 space-y-6">
             
-            <div class="group relative border-3 border-dashed border-indigo-200 hover:border-indigo-400 bg-indigo-50/50 hover:bg-indigo-50 rounded-2xl p-10 text-center cursor-pointer transition-all duration-300" onclick="document.getElementById('fileInput').click()">
-                <input type="file" id="fileInput" accept="image/*" class="hidden">
+            <div class="relative w-full aspect-[4/3] bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 overflow-hidden flex flex-col items-center justify-center transition-all" id="imageZone">
                 
-                <div id="placeholder" class="group-hover:scale-105 transition-transform">
-                    <div class="bg-white w-20 h-20 rounded-full flex items-center justify-center mx-auto shadow-md mb-4">
-                        <span class="text-5xl">📸</span>
+                <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden">
+                <input type="file" id="galleryInput" accept="image/*" class="hidden">
+
+                <div id="placeholder" class="text-center p-4">
+                    <div class="bg-indigo-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
+                        👕
                     </div>
-                    <p class="text-gray-700 font-semibold text-lg">Ajoute ta photo ici</p>
-                    <p class="text-gray-400 text-sm mt-1">Tape pour parcourir</p>
+                    <p class="text-gray-400 text-sm font-medium">Aucune photo sélectionnée</p>
                 </div>
 
-                <img id="preview" class="hidden w-full h-64 object-cover rounded-xl shadow-sm mx-auto relative z-10">
+                <img id="preview" class="hidden absolute inset-0 w-full h-full object-cover">
                 
-                <div id="changePhotoBtn" class="hidden absolute top-4 right-4 bg-white/80 backdrop-blur text-gray-700 px-3 py-1 rounded-full text-xs font-bold shadow-sm z-20">
-                    Changer
-                </div>
+                <button id="resetBtn" class="hidden absolute top-3 right-3 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 backdrop-blur-sm transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
 
-            <button id="actionBtn" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold text-lg py-5 rounded-2xl shadow-lg hover:shadow-indigo-200/50 transition-all scale-100 hover:scale-[1.02] active:scale-95 disabled:opacity-70 disabled:scale-100 disabled:cursor-not-allowed flex justify-center items-center gap-3">
+            <div id="choiceButtons" class="grid grid-cols-2 gap-3">
+                <button onclick="document.getElementById('cameraInput').click()" class="flex flex-col items-center justify-center bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white p-4 rounded-xl transition shadow-lg shadow-indigo-200">
+                    <span class="text-2xl mb-1">📸</span>
+                    <span class="font-semibold text-sm">Prendre Photo</span>
+                </button>
+                <button onclick="document.getElementById('galleryInput').click()" class="flex flex-col items-center justify-center bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 p-4 rounded-xl transition shadow-sm">
+                    <span class="text-2xl mb-1">🖼️</span>
+                    <span class="font-semibold text-sm">Galerie</span>
+                </button>
+            </div>
+
+            <button id="analyzeBtn" class="hidden w-full bg-black text-white font-bold text-lg py-4 rounded-xl shadow-xl transform transition hover:scale-[1.02] active:scale-95 flex justify-center items-center gap-3">
                 Générer l'Annonce ✨
             </button>
 
-            <div id="errorMsg" class="hidden bg-red-50 border border-red-100 text-red-600 p-4 rounded-xl text-sm font-medium text-center fade-in"></div>
+            <div id="errorMsg" class="hidden bg-red-50 text-red-600 p-4 rounded-xl text-sm font-medium text-center fade-in"></div>
 
-            <div id="result" class="hidden space-y-5 pt-6 border-t border-gray-100 fade-in">
+            <div id="result" class="hidden space-y-5 pt-2 fade-in pb-4">
                 
-                <div>
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="bg-indigo-100 text-indigo-600 p-1.5 rounded-lg text-xl">🏷️</span>
-                        <p class="text-sm font-bold text-gray-500 uppercase tracking-wider">Titre</p>
-                    </div>
-                    <div id="resTitle" class="bg-slate-50 p-4 rounded-xl font-bold text-gray-800 text-lg border border-gray-200 select-all hover:border-indigo-300 transition"></div>
+                <div class="group">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 ml-1">Titre</p>
+                    <div id="resTitle" class="bg-gray-50 p-4 rounded-xl font-bold text-gray-800 text-lg border border-gray-100 select-all"></div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="bg-green-100 text-green-600 p-1.5 rounded-lg text-xl">💰</span>
-                            <p class="text-sm font-bold text-gray-500 uppercase tracking-wider">Prix</p>
-                        </div>
-                        <div id="resPrice" class="bg-green-50 text-green-800 p-4 rounded-xl font-bold text-xl border border-green-200"></div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 ml-1">Prix Estimé</p>
+                        <div id="resPrice" class="bg-green-50 text-green-700 p-4 rounded-xl font-bold text-lg border border-green-100"></div>
                     </div>
                     <div>
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="bg-blue-100 text-blue-600 p-1.5 rounded-lg text-xl">📂</span>
-                            <p class="text-sm font-bold text-gray-500 uppercase tracking-wider">Catégorie</p>
-                        </div>
-                        <div id="resCat" class="bg-blue-50 text-blue-800 p-4 rounded-xl text-sm font-medium border border-blue-200 flex items-center h-[60px]"></div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 ml-1">Catégorie</p>
+                        <div id="resCat" class="bg-blue-50 text-blue-700 p-4 rounded-xl text-sm font-medium border border-blue-100 flex items-center h-[60px] leading-tight"></div>
                     </div>
                 </div>
 
                 <div>
-                     <div class="flex items-center gap-2 mb-2">
-                        <span class="bg-purple-100 text-purple-600 p-1.5 rounded-lg text-xl">📝</span>
-                        <p class="text-sm font-bold text-gray-500 uppercase tracking-wider">Description</p>
-                    </div>
-                    <div id="resDesc" class="bg-slate-50 p-4 rounded-xl text-sm text-gray-700 whitespace-pre-line leading-relaxed border border-gray-200 select-all hover:border-indigo-300 transition"></div>
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 ml-1">Description</p>
+                    <div id="resDesc" class="bg-gray-50 p-4 rounded-xl text-sm text-gray-600 whitespace-pre-line leading-relaxed border border-gray-100 select-all"></div>
                 </div>
 
                 <div>
-                     <div class="flex items-center gap-2 mb-2">
-                        <span class="bg-pink-100 text-pink-600 p-1.5 rounded-lg text-xl">#️⃣</span>
-                        <p class="text-sm font-bold text-gray-500 uppercase tracking-wider">Hashtags</p>
-                    </div>
-                    <div id="resTags" class="bg-slate-50 p-4 rounded-xl text-indigo-600 text-sm font-medium border border-gray-200 select-all flex flex-wrap gap-2 hover:border-indigo-300 transition"></div>
+                    <div id="resTags" class="flex flex-wrap gap-2 text-xs font-medium text-indigo-600"></div>
                 </div>
-                
-                <p class="text-center text-sm text-gray-400 font-medium pt-2">👉 Appuie longuement sur le texte pour copier !</p>
+
+                <div class="text-center pt-4">
+                    <p class="text-xs text-gray-400">Copie le texte et colle-le sur Vinted ! 🚀</p>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        const fileInput = document.getElementById('fileInput');
+        // Éléments du DOM
+        const cameraInput = document.getElementById('cameraInput');
+        const galleryInput = document.getElementById('galleryInput');
         const preview = document.getElementById('preview');
         const placeholder = document.getElementById('placeholder');
-        const changePhotoBtn = document.getElementById('changePhotoBtn');
-        const btn = document.getElementById('actionBtn');
+        const choiceButtons = document.getElementById('choiceButtons');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const resetBtn = document.getElementById('resetBtn');
         const resultDiv = document.getElementById('result');
         const errorDiv = document.getElementById('errorMsg');
+        
         let fileBase64 = null;
 
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
+        // Fonction commune pour gérer l'image
+        function handleFile(file) {
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
+                    // Affichage Preview
                     preview.src = e.target.result;
                     preview.classList.remove('hidden');
+                    resetBtn.classList.remove('hidden');
                     placeholder.classList.add('hidden');
-                    changePhotoBtn.classList.remove('hidden');
-                    fileBase64 = e.target.result;
+                    
+                    // UI Logic : On cache les boutons de choix, on montre le bouton Analyser
+                    choiceButtons.classList.add('hidden');
+                    analyzeBtn.classList.remove('hidden');
+                    
+                    // Reset résultats
+                    resultDiv.classList.add('hidden');
                     errorDiv.classList.add('hidden');
-                    resultDiv.classList.add('hidden'); // Cache les anciens résultats si on change d'image
+                    
+                    fileBase64 = e.target.result;
                 }
                 reader.readAsDataURL(file);
             }
+        }
+
+        // Listeners sur les 2 inputs
+        cameraInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+        galleryInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+
+        // Bouton Reset (La petite croix)
+        resetBtn.addEventListener('click', () => {
+            fileBase64 = null;
+            preview.classList.add('hidden');
+            resetBtn.classList.add('hidden');
+            placeholder.classList.remove('hidden');
+            choiceButtons.classList.remove('hidden');
+            analyzeBtn.classList.add('hidden');
+            resultDiv.classList.add('hidden');
+            cameraInput.value = '';
+            galleryInput.value = '';
         });
 
-        btn.addEventListener('click', async () => {
-            if (!fileBase64) { 
-                errorDiv.innerText = "📸 N'oublie pas la photo !";
-                errorDiv.classList.remove('hidden');
-                return; 
-            }
+        // Action Analyser
+        analyzeBtn.addEventListener('click', async () => {
+            if (!fileBase64) return;
             
-            btn.disabled = true; 
-            // Ajout d'un petit loader dans le bouton
-            btn.innerHTML = '<div class="loader"></div> Analyse en cours...';
-            resultDiv.classList.add('hidden');
-            errorDiv.classList.add('hidden');
-
+            analyzeBtn.disabled = true; 
+            analyzeBtn.innerHTML = '<div class="loader"></div>';
+            
             try {
                 const response = await fetch('/api/analyze', {
                     method: 'POST',
@@ -157,31 +178,33 @@
 
                 const data = await response.json();
                 
-                if (!response.ok || data.error) {
-                    throw new Error(data.error || "Erreur Serveur");
-                }
+                if (!response.ok || data.error) throw new Error(data.error || "Erreur inconnue");
 
+                // Remplissage des données
                 document.getElementById('resTitle').innerText = data.titre;
                 document.getElementById('resPrice').innerText = data.prix;
                 document.getElementById('resCat').innerText = data.categorie;
                 document.getElementById('resDesc').innerText = data.description;
-                // On rend les hashtags plus jolis (badges)
-                const tagsHTML = data.hashtags.split(' ').map(tag => `<span class="bg-indigo-50 px-2 py-1 rounded-md">#${tag.replace('#','')}</span>`).join(' ');
+                
+                // Hashtags en badges
+                const tagsHTML = data.hashtags.split(' ')
+                    .filter(t => t.length > 1)
+                    .map(tag => `<span class="bg-indigo-50 px-2 py-1 rounded-lg">#${tag.replace('#','')}</span>`)
+                    .join('');
                 document.getElementById('resTags').innerHTML = tagsHTML;
 
                 resultDiv.classList.remove('hidden');
-                // Scroll automatique vers les résultats sur mobile
-                setTimeout(() => {
-                    resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
+                
+                // Petit scroll auto
+                setTimeout(() => resultDiv.scrollIntoView({ behavior: 'smooth' }), 100);
 
             } catch (error) {
                 console.error(error);
-                errorDiv.innerText = "Oups ! " + error.message + ". Réessaie avec une autre photo.";
+                errorDiv.innerText = "Oups ! " + error.message;
                 errorDiv.classList.remove('hidden');
             } finally {
-                btn.disabled = false; 
-                btn.innerHTML = "Générer l'Annonce ✨";
+                analyzeBtn.disabled = false; 
+                analyzeBtn.innerHTML = "Générer l'Annonce ✨";
             }
         });
     </script>
