@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlashSell - Gemini Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4 font-sans">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-blue-600 p-6 text-center">
+            <h1 class="text-3xl font-bold text-white">⚡ FlashSell</h1>
+            <p class="text-blue-100 mt-1">Boosté par Gemini 1.5</p>
+        </div>
+        <div class="p-6 space-y-6">
+            <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:bg-gray-50 transition" onclick="document.getElementById('fileInput').click()">
+                <input type="file" id="fileInput" accept="image/*" class="hidden">
+                <div id="placeholder">
+                    <span class="text-4xl">📸</span>
+                    <p class="text-gray-500 mt-2">Tape ici pour uploader</p>
+                </div>
+                <img id="preview" class="hidden w-full h-48 object-contain rounded mx-auto">
+            </div>
+            <button id="actionBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition disabled:opacity-50">
+                Générer l'Annonce ✨
+            </button>
+            <div id="result" class="hidden space-y-4 pt-4 border-t">
+                <div><p class="text-xs font-bold text-gray-400 uppercase">Titre</p><div id="resTitle" class="bg-gray-100 p-3 rounded font-bold text-gray-800 select-all"></div></div>
+                <div class="flex gap-2">
+                    <div class="w-1/2"><p class="text-xs font-bold text-gray-400 uppercase">Prix</p><div id="resPrice" class="bg-green-100 text-green-800 p-3 rounded font-bold border border-green-200"></div></div>
+                    <div class="w-1/2"><p class="text-xs font-bold text-gray-400 uppercase">Catégorie</p><div id="resCat" class="bg-blue-50 text-blue-800 p-3 rounded text-sm border border-blue-100"></div></div>
+                </div>
+                <div><p class="text-xs font-bold text-gray-400 uppercase">Description</p><div id="resDesc" class="bg-gray-100 p-3 rounded text-sm text-gray-700 whitespace-pre-line select-all"></div></div>
+                <div><p class="text-xs font-bold text-gray-400 uppercase">Hashtags</p><div id="resTags" class="bg-gray-50 p-2 rounded text-blue-600 text-xs font-mono select-all"></div></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const preview = document.getElementById('preview');
+        const btn = document.getElementById('actionBtn');
+        const resultDiv = document.getElementById('result');
+        let fileBase64 = null;
+
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    document.getElementById('placeholder').classList.add('hidden');
+                    fileBase64 = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        btn.addEventListener('click', async () => {
+            if (!fileBase64) { alert("Mets une photo !"); return; }
+            btn.disabled = true; btn.innerText = "Gemini réfléchit..."; resultDiv.classList.add('hidden');
+
+            try {
+                // On appelle NOTRE serveur Vercel (api/analyze)
+                // C'est lui qui a la clé, pas nous.
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image: fileBase64 })
+                });
+
+                const data = await response.json();
+                if (data.error) throw new Error(data.error);
+
+                document.getElementById('resTitle').innerText = data.titre;
+                document.getElementById('resPrice').innerText = data.prix;
+                document.getElementById('resCat').innerText = data.categorie;
+                document.getElementById('resDesc').innerText = data.description;
+                document.getElementById('resTags').innerText = data.hashtags;
+                resultDiv.classList.remove('hidden');
+            } catch (error) {
+                alert("Erreur: " + error.message);
+            } finally {
+                btn.disabled = false; btn.innerText = "Générer l'Annonce ✨";
+            }
+        });
+    </script>
+</body>
+</html>
