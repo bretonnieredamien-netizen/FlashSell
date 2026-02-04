@@ -14,10 +14,10 @@
             border-radius: 50%;
             width: 24px;
             height: 24px;
-            animation: spin 1s linear infinite;
+            animation: spin 0.8s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .fade-in { animation: fadeIn 0.5s ease-out forwards; opacity: 0; transform: translateY(10px); }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; opacity: 0; transform: translateY(10px); }
         @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -29,20 +29,17 @@
             <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">
                 ⚡ Flash<span class="text-indigo-600">Sell</span>
             </h1>
-            <p class="text-gray-400 text-sm mt-2 font-medium">Boost tes ventes Vinted avec l'IA</p>
+            <p class="text-gray-400 text-sm mt-2 font-medium">Boost tes ventes Vinted </p>
         </div>
 
         <div class="p-6 space-y-6">
             
             <div class="relative w-full aspect-[4/3] bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 overflow-hidden flex flex-col items-center justify-center transition-all" id="imageZone">
-                
                 <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden">
                 <input type="file" id="galleryInput" accept="image/*" class="hidden">
 
                 <div id="placeholder" class="text-center p-4">
-                    <div class="bg-indigo-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
-                        👕
-                    </div>
+                    <div class="bg-indigo-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">👕</div>
                     <p class="text-gray-400 text-sm font-medium">Aucune photo sélectionnée</p>
                 </div>
 
@@ -73,7 +70,6 @@
             <div id="errorMsg" class="hidden bg-red-50 text-red-600 p-4 rounded-xl text-sm font-medium text-center fade-in"></div>
 
             <div id="result" class="hidden space-y-5 pt-2 fade-in pb-4">
-                
                 <div class="group">
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 ml-1">Titre</p>
                     <div id="resTitle" class="bg-gray-50 p-4 rounded-xl font-bold text-gray-800 text-lg border border-gray-100 select-all"></div>
@@ -107,7 +103,6 @@
     </div>
 
     <script>
-        // Éléments du DOM
         const cameraInput = document.getElementById('cameraInput');
         const galleryInput = document.getElementById('galleryInput');
         const preview = document.getElementById('preview');
@@ -118,43 +113,65 @@
         const resultDiv = document.getElementById('result');
         const errorDiv = document.getElementById('errorMsg');
         
-        let fileBase64 = null;
+        let compressedImageBase64 = null;
 
-        // Fonction commune pour gérer l'image
+        // --- OPTIMISATION : Compression de l'image ---
+        function compressImage(file, callback) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800; // On réduit à 800px max (suffisant pour l'IA)
+                    const scaleSize = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                    // Conversion en JPEG qualité 0.7 pour réduire le poids
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    callback(dataUrl);
+                };
+            };
+        }
+
         function handleFile(file) {
             if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    // Affichage Preview
-                    preview.src = e.target.result;
+                // On affiche un mini loading si la compression prend quelques ms
+                placeholder.innerHTML = '<p class="text-gray-400 text-xs">Optimisation...</p>';
+                
+                compressImage(file, (base64) => {
+                    preview.src = base64;
                     preview.classList.remove('hidden');
                     resetBtn.classList.remove('hidden');
                     placeholder.classList.add('hidden');
-                    
-                    // UI Logic : On cache les boutons de choix, on montre le bouton Analyser
+                    placeholder.innerHTML = ''; // Clean reset
+
                     choiceButtons.classList.add('hidden');
                     analyzeBtn.classList.remove('hidden');
                     
-                    // Reset résultats
                     resultDiv.classList.add('hidden');
                     errorDiv.classList.add('hidden');
                     
-                    fileBase64 = e.target.result;
-                }
-                reader.readAsDataURL(file);
+                    compressedImageBase64 = base64;
+                });
             }
         }
 
-        // Listeners sur les 2 inputs
         cameraInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
         galleryInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
 
-        // Bouton Reset (La petite croix)
         resetBtn.addEventListener('click', () => {
-            fileBase64 = null;
+            compressedImageBase64 = null;
             preview.classList.add('hidden');
             resetBtn.classList.add('hidden');
             placeholder.classList.remove('hidden');
+            // Remet le contenu par défaut du placeholder
+            placeholder.innerHTML = '<div class="bg-indigo-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">👕</div><p class="text-gray-400 text-sm font-medium">Aucune photo sélectionnée</p>';
             choiceButtons.classList.remove('hidden');
             analyzeBtn.classList.add('hidden');
             resultDiv.classList.add('hidden');
@@ -162,31 +179,28 @@
             galleryInput.value = '';
         });
 
-        // Action Analyser
         analyzeBtn.addEventListener('click', async () => {
-            if (!fileBase64) return;
+            if (!compressedImageBase64) return;
             
             analyzeBtn.disabled = true; 
-            analyzeBtn.innerHTML = '<div class="loader"></div>';
+            analyzeBtn.innerHTML = '<div class="loader"></div>'; // Juste le loader
             
             try {
                 const response = await fetch('/api/analyze', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ image: fileBase64 })
+                    body: JSON.stringify({ image: compressedImageBase64 })
                 });
 
                 const data = await response.json();
                 
                 if (!response.ok || data.error) throw new Error(data.error || "Erreur inconnue");
 
-                // Remplissage des données
                 document.getElementById('resTitle').innerText = data.titre;
                 document.getElementById('resPrice').innerText = data.prix;
                 document.getElementById('resCat').innerText = data.categorie;
                 document.getElementById('resDesc').innerText = data.description;
                 
-                // Hashtags en badges
                 const tagsHTML = data.hashtags.split(' ')
                     .filter(t => t.length > 1)
                     .map(tag => `<span class="bg-indigo-50 px-2 py-1 rounded-lg">#${tag.replace('#','')}</span>`)
@@ -194,8 +208,6 @@
                 document.getElementById('resTags').innerHTML = tagsHTML;
 
                 resultDiv.classList.remove('hidden');
-                
-                // Petit scroll auto
                 setTimeout(() => resultDiv.scrollIntoView({ behavior: 'smooth' }), 100);
 
             } catch (error) {
