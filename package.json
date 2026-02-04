@@ -1,11 +1,8 @@
 {
-  "name": "boite-magique",
+  "name": "flashsell-gemini",
   "version": "1.0.0",
+  "type": "module",
   "dependencies": {
-    "stripe": "^14.0.0",
-    "@google/generative-ai": "^0.21.0",
-    "node-fetch": "^2.6.1",
-    "resend": "^3.2.0",
-    "micro": "^10.0.1"
+    "@google/generative-ai": "^0.21.0"
   }
 }
