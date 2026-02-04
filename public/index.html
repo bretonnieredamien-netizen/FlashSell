@@ -6,6 +6,9 @@
     <title>FlashSell - Vinted Booster</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    
     <style>
         body { font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         .loader {
@@ -19,17 +22,20 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .fade-in { animation: fadeIn 0.4s ease-out forwards; opacity: 0; transform: translateY(10px); }
         @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        
+        /* Effet click sur les zones copiables */
+        .copy-zone:active { transform: scale(0.98); background-color: #f3f4f6; }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col items-center justify-center p-4">
+<body class="bg-gray-50 min-h-screen flex flex-col items-center justify-center p-4 pb-20">
 
-    <div class="bg-white w-full max-w-[500px] rounded-[2rem] shadow-xl overflow-hidden border border-gray-100">
+    <div class="bg-white w-full max-w-[500px] rounded-[2rem] shadow-xl overflow-hidden border border-gray-100 relative">
         
         <div class="pt-8 pb-4 text-center px-6">
             <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">
                 ⚡ Flash<span class="text-indigo-600">Sell</span>
             </h1>
-            <p class="text-gray-400 text-sm mt-2 font-medium">Boost tes ventes Vinted </p>
+            <p class="text-gray-400 text-sm mt-2 font-medium">Boost tes ventes Vinted avec l'IA</p>
         </div>
 
         <div class="p-6 space-y-6">
@@ -45,7 +51,7 @@
 
                 <img id="preview" class="hidden absolute inset-0 w-full h-full object-cover">
                 
-                <button id="resetBtn" class="hidden absolute top-3 right-3 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 backdrop-blur-sm transition">
+                <button id="resetBtn" class="hidden absolute top-3 right-3 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 backdrop-blur-sm transition z-10">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -69,37 +75,51 @@
 
             <div id="errorMsg" class="hidden bg-red-50 text-red-600 p-4 rounded-xl text-sm font-medium text-center fade-in"></div>
 
-            <div id="result" class="hidden space-y-5 pt-2 fade-in pb-4">
-                <div class="group">
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 ml-1">Titre</p>
-                    <div id="resTitle" class="bg-gray-50 p-4 rounded-xl font-bold text-gray-800 text-lg border border-gray-100 select-all"></div>
+            <div id="result" class="hidden space-y-5 pt-2 fade-in pb-20">
+                
+                <div class="group copy-zone cursor-pointer relative" onclick="copyText('resTitle', 'Titre copié !')">
+                    <div class="flex justify-between items-end mb-1 ml-1">
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Titre</p>
+                        <span class="text-[10px] text-indigo-500 font-semibold bg-indigo-50 px-2 py-0.5 rounded-full">Copier</span>
+                    </div>
+                    <div id="resTitle" class="bg-gray-50 p-4 rounded-xl font-bold text-gray-800 text-lg border border-gray-100 select-all hover:border-indigo-300 transition"></div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
-                    <div>
+                    <div class="copy-zone cursor-pointer" onclick="copyText('resPrice', 'Prix copié !')">
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 ml-1">Prix Estimé</p>
-                        <div id="resPrice" class="bg-green-50 text-green-700 p-4 rounded-xl font-bold text-lg border border-green-100"></div>
+                        <div id="resPrice" class="bg-green-50 text-green-700 p-4 rounded-xl font-bold text-lg border border-green-100 hover:border-green-300 transition"></div>
                     </div>
-                    <div>
+                    <div class="copy-zone cursor-pointer" onclick="copyText('resCat', 'Catégorie copiée !')">
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 ml-1">Catégorie</p>
-                        <div id="resCat" class="bg-blue-50 text-blue-700 p-4 rounded-xl text-sm font-medium border border-blue-100 flex items-center h-[60px] leading-tight"></div>
+                        <div id="resCat" class="bg-blue-50 text-blue-700 p-4 rounded-xl text-sm font-medium border border-blue-100 flex items-center h-[60px] leading-tight hover:border-blue-300 transition"></div>
                     </div>
                 </div>
 
-                <div>
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 ml-1">Description</p>
-                    <div id="resDesc" class="bg-gray-50 p-4 rounded-xl text-sm text-gray-600 whitespace-pre-line leading-relaxed border border-gray-100 select-all"></div>
+                <div class="copy-zone cursor-pointer" onclick="copyText('resDesc', 'Description copiée !')">
+                    <div class="flex justify-between items-end mb-1 ml-1">
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Description</p>
+                        <span class="text-[10px] text-indigo-500 font-semibold bg-indigo-50 px-2 py-0.5 rounded-full">Copier</span>
+                    </div>
+                    <div id="resDesc" class="bg-gray-50 p-4 rounded-xl text-sm text-gray-600 whitespace-pre-line leading-relaxed border border-gray-100 select-all hover:border-indigo-300 transition"></div>
                 </div>
 
                 <div>
                     <div id="resTags" class="flex flex-wrap gap-2 text-xs font-medium text-indigo-600"></div>
                 </div>
 
-                <div class="text-center pt-4">
-                    <p class="text-xs text-gray-400">Copie le texte et colle-le sur Vinted ! 🚀</p>
-                </div>
             </div>
         </div>
+
+        <div id="stickyFooter" class="hidden fixed bottom-6 left-4 right-4 max-w-[468px] mx-auto z-50 fade-in">
+            <button onclick="copyAndGo()" class="w-full bg-[#09B1BA] hover:bg-[#0799a1] text-white font-bold py-4 rounded-2xl shadow-2xl flex items-center justify-center gap-2 transform active:scale-95 transition ring-4 ring-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                </svg>
+                <span>Copier Tout & Ouvrir Vinted</span>
+            </button>
+        </div>
+
     </div>
 
     <script>
@@ -112,10 +132,12 @@
         const resetBtn = document.getElementById('resetBtn');
         const resultDiv = document.getElementById('result');
         const errorDiv = document.getElementById('errorMsg');
+        const stickyFooter = document.getElementById('stickyFooter');
         
         let compressedImageBase64 = null;
+        let fullDescriptionToCopy = "";
 
-        // --- OPTIMISATION : Compression de l'image ---
+        // Fonction Compression
         function compressImage(file, callback) {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -124,39 +146,31 @@
                 img.src = event.target.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 800; // On réduit à 800px max (suffisant pour l'IA)
+                    const MAX_WIDTH = 800;
                     const scaleSize = MAX_WIDTH / img.width;
                     canvas.width = MAX_WIDTH;
                     canvas.height = img.height * scaleSize;
-
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-                    // Conversion en JPEG qualité 0.7 pour réduire le poids
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-                    callback(dataUrl);
+                    callback(canvas.toDataURL('image/jpeg', 0.7));
                 };
             };
         }
 
         function handleFile(file) {
             if (file) {
-                // On affiche un mini loading si la compression prend quelques ms
                 placeholder.innerHTML = '<p class="text-gray-400 text-xs">Optimisation...</p>';
-                
                 compressImage(file, (base64) => {
                     preview.src = base64;
                     preview.classList.remove('hidden');
                     resetBtn.classList.remove('hidden');
                     placeholder.classList.add('hidden');
-                    placeholder.innerHTML = ''; // Clean reset
-
+                    placeholder.innerHTML = '';
                     choiceButtons.classList.add('hidden');
                     analyzeBtn.classList.remove('hidden');
-                    
                     resultDiv.classList.add('hidden');
+                    stickyFooter.classList.add('hidden');
                     errorDiv.classList.add('hidden');
-                    
                     compressedImageBase64 = base64;
                 });
             }
@@ -170,20 +184,53 @@
             preview.classList.add('hidden');
             resetBtn.classList.add('hidden');
             placeholder.classList.remove('hidden');
-            // Remet le contenu par défaut du placeholder
             placeholder.innerHTML = '<div class="bg-indigo-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">👕</div><p class="text-gray-400 text-sm font-medium">Aucune photo sélectionnée</p>';
             choiceButtons.classList.remove('hidden');
             analyzeBtn.classList.add('hidden');
             resultDiv.classList.add('hidden');
+            stickyFooter.classList.add('hidden');
             cameraInput.value = '';
             galleryInput.value = '';
         });
 
+        // Fonction pour copier un élément spécifique
+        function copyText(elementId, message) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                Toastify({
+                    text: message,
+                    duration: 2000,
+                    gravity: "top",
+                    position: "center",
+                    style: { background: "#4f46e5", borderRadius: "10px", fontSize: "12px", fontWeight: "bold" }
+                }).showToast();
+            });
+        }
+
+        // LE GROS HACK UX : Copier + Ouvrir Vinted
+        function copyAndGo() {
+            // On copie la description + les hashtags
+            navigator.clipboard.writeText(fullDescriptionToCopy).then(() => {
+                Toastify({
+                    text: "Description copiée ! Ouverture de Vinted...",
+                    duration: 3000,
+                    gravity: "bottom",
+                    position: "center",
+                    style: { background: "#09B1BA", borderRadius: "10px" }
+                }).showToast();
+                
+                // Petit délai pour laisser le toast apparaître
+                setTimeout(() => {
+                    // Lien profond pour ouvrir Vinted (ou le site mobile)
+                    window.open('https://www.vinted.fr/items/new', '_blank');
+                }, 800);
+            });
+        }
+
         analyzeBtn.addEventListener('click', async () => {
             if (!compressedImageBase64) return;
-            
             analyzeBtn.disabled = true; 
-            analyzeBtn.innerHTML = '<div class="loader"></div>'; // Juste le loader
+            analyzeBtn.innerHTML = '<div class="loader"></div>';
             
             try {
                 const response = await fetch('/api/analyze', {
@@ -191,9 +238,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ image: compressedImageBase64 })
                 });
-
                 const data = await response.json();
-                
                 if (!response.ok || data.error) throw new Error(data.error || "Erreur inconnue");
 
                 document.getElementById('resTitle').innerText = data.titre;
@@ -201,13 +246,19 @@
                 document.getElementById('resCat').innerText = data.categorie;
                 document.getElementById('resDesc').innerText = data.description;
                 
+                // On formate les hashtags pour l'affichage
                 const tagsHTML = data.hashtags.split(' ')
                     .filter(t => t.length > 1)
                     .map(tag => `<span class="bg-indigo-50 px-2 py-1 rounded-lg">#${tag.replace('#','')}</span>`)
                     .join('');
                 document.getElementById('resTags').innerHTML = tagsHTML;
 
+                // On prépare le texte complet pour le bouton "Copier Tout"
+                // On met Description + 2 sauts de ligne + Hashtags
+                fullDescriptionToCopy = `${data.description}\n\n${data.hashtags}`;
+
                 resultDiv.classList.remove('hidden');
+                stickyFooter.classList.remove('hidden'); // Affiche le bouton Vinted
                 setTimeout(() => resultDiv.scrollIntoView({ behavior: 'smooth' }), 100);
 
             } catch (error) {
