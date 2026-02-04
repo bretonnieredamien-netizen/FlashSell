@@ -7,14 +7,13 @@
     <meta name="description" content="Génère tes annonces Vinted en 3 secondes.">
 
     <link rel="manifest" href="/manifest.json">
-
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="FlashSell">
-    
     <link rel="apple-touch-icon" href="/icon-192.png">
     <link rel="icon" type="image/png" href="/icon-192.png">
     <meta name="theme-color" content="#4f46e5">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
@@ -22,8 +21,6 @@
     
     <style>
         body { font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
-        /* Animation du Loader */
         .loader {
             border: 3px solid rgba(255,255,255,0.3);
             border-top: 3px solid #fff;
@@ -33,15 +30,9 @@
             animation: spin 0.8s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        /* Animation d'apparition */
         .fade-in { animation: fadeIn 0.4s ease-out forwards; opacity: 0; transform: translateY(10px); }
         @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
-        
-        /* Effet click sur les zones copiables */
         .copy-zone:active { transform: scale(0.98); background-color: #f3f4f6; }
-        
-        /* Fond sombre de la modale */
         .modal-backdrop { background-color: rgba(0,0,0,0.6); backdrop-filter: blur(2px); }
     </style>
 </head>
@@ -94,7 +85,6 @@
             <div id="errorMsg" class="hidden bg-red-50 text-red-600 p-4 rounded-xl text-sm font-medium text-center fade-in"></div>
 
             <div id="result" class="hidden space-y-5 pt-2 fade-in pb-4">
-                
                 <div class="group copy-zone cursor-pointer relative" onclick="copyText('resTitle', 'Titre copié !')">
                     <div class="flex justify-between items-end mb-1 ml-1">
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Titre</p>
@@ -126,13 +116,12 @@
                     <div id="resTags" class="flex flex-wrap gap-2 text-xs font-medium text-indigo-600"></div>
                 </div>
             </div>
-
+            
             <div class="text-center pt-4 pb-2">
                 <button onclick="toggleInstallModal()" class="text-xs text-gray-400 font-medium hover:text-indigo-500 flex items-center justify-center gap-1 mx-auto transition">
                     📲 Comment installer l'application ?
                 </button>
             </div>
-
         </div>
 
         <div id="stickyFooter" class="hidden fixed bottom-6 left-4 right-4 max-w-[468px] mx-auto z-50 fade-in">
@@ -152,29 +141,14 @@
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
-                
                 <div class="space-y-4">
                     <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="text-xl">🍎</span>
-                            <span class="font-bold text-sm text-gray-700">Sur iPhone (Safari)</span>
-                        </div>
-                        <ol class="text-xs text-gray-600 space-y-2 list-decimal ml-4">
-                            <li>Appuie sur le bouton <strong>Partager</strong> <span class="inline-block align-middle"><svg class="w-3 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg></span> en bas.</li>
-                            <li>Fais défiler vers le bas.</li>
-                            <li>Clique sur <strong>"Sur l'écran d'accueil"</strong>.</li>
-                        </ol>
+                        <div class="flex items-center gap-2 mb-2"><span class="text-xl">🍎</span><span class="font-bold text-sm text-gray-700">Sur iPhone (Safari)</span></div>
+                        <ol class="text-xs text-gray-600 space-y-2 list-decimal ml-4"><li>Bouton <strong>Partager</strong> <svg class="w-3 h-3 text-blue-500 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg></li><li><strong>"Sur l'écran d'accueil"</strong></li></ol>
                     </div>
-
                     <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="text-xl">🤖</span>
-                            <span class="font-bold text-sm text-gray-700">Sur Android (Chrome)</span>
-                        </div>
-                        <ol class="text-xs text-gray-600 space-y-2 list-decimal ml-4">
-                            <li>Appuie sur les <strong>3 petits points</strong> (Menu) en haut à droite.</li>
-                            <li>Clique sur <strong>"Installer l'application"</strong> ou <strong>"Ajouter à l'écran d'accueil"</strong>.</li>
-                        </ol>
+                        <div class="flex items-center gap-2 mb-2"><span class="text-xl">🤖</span><span class="font-bold text-sm text-gray-700">Sur Android (Chrome)</span></div>
+                        <ol class="text-xs text-gray-600 space-y-2 list-decimal ml-4"><li>Menu <strong>3 points</strong></li><li><strong>"Installer l'application"</strong></li></ol>
                     </div>
                 </div>
                 <button onclick="toggleInstallModal()" class="w-full mt-6 bg-black text-white font-bold py-3 rounded-xl">J'ai compris</button>
@@ -184,7 +158,7 @@
     </div>
 
     <script>
-        // --- ÉLÉMENTS DU DOM ---
+        // DOM Elements
         const cameraInput = document.getElementById('cameraInput');
         const galleryInput = document.getElementById('galleryInput');
         const preview = document.getElementById('preview');
@@ -200,58 +174,52 @@
         let compressedImageBase64 = null;
         let fullDescriptionToCopy = "";
 
-        // --- GESTION DE LA MODALE ---
-        function toggleInstallModal() {
-            installModal.classList.toggle('hidden');
-        }
-        installModal.addEventListener('click', (e) => {
-            if (e.target === installModal) toggleInstallModal();
-        });
+        // --- GESTION DE LA MEMOIRE (Local Storage) ---
+        // Cette fonction se lance dès l'ouverture de la page
+        window.onload = function() {
+            const savedData = localStorage.getItem('flashSell_data');
+            const savedImage = localStorage.getItem('flashSell_image');
 
-        // --- COMPRESSION IMAGE (Optimisation Vitesse) ---
-        function compressImage(file, callback) {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = (event) => {
-                const img = new Image();
-                img.src = event.target.result;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 800; // Largeur max pour l'IA
-                    const scaleSize = MAX_WIDTH / img.width;
-                    canvas.width = MAX_WIDTH;
-                    canvas.height = img.height * scaleSize;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    callback(canvas.toDataURL('image/jpeg', 0.7)); // Qualité 70%
-                };
-            };
-        }
-
-        // --- GESTION DES FICHIERS ---
-        function handleFile(file) {
-            if (file) {
-                placeholder.innerHTML = '<p class="text-gray-400 text-xs">Optimisation...</p>';
-                compressImage(file, (base64) => {
-                    preview.src = base64;
+            if (savedData && savedImage) {
+                // On restaure l'état précédent
+                try {
+                    const data = JSON.parse(savedData);
+                    compressedImageBase64 = savedImage;
+                    
+                    // Remettre l'image
+                    preview.src = savedImage;
                     preview.classList.remove('hidden');
                     resetBtn.classList.remove('hidden');
                     placeholder.classList.add('hidden');
                     placeholder.innerHTML = '';
+                    
+                    // Masquer les boutons
                     choiceButtons.classList.add('hidden');
-                    analyzeBtn.classList.remove('hidden');
-                    resultDiv.classList.add('hidden');
-                    stickyFooter.classList.add('hidden');
-                    errorDiv.classList.add('hidden');
-                    compressedImageBase64 = base64;
-                });
+                    
+                    // Remplir les textes
+                    populateResults(data);
+                    
+                    // Afficher les résultats
+                    resultDiv.classList.remove('hidden');
+                    stickyFooter.classList.remove('hidden');
+                    
+                } catch (e) {
+                    console.error("Erreur de restauration", e);
+                    localStorage.clear(); // Si erreur, on nettoie
+                }
             }
+        };
+
+        function saveState(data, image) {
+            localStorage.setItem('flashSell_data', JSON.stringify(data));
+            localStorage.setItem('flashSell_image', image);
         }
 
-        cameraInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
-        galleryInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
-
-        resetBtn.addEventListener('click', () => {
+        function clearState() {
+            localStorage.removeItem('flashSell_data');
+            localStorage.removeItem('flashSell_image');
+            
+            // Reset visuel
             compressedImageBase64 = null;
             preview.classList.add('hidden');
             resetBtn.classList.add('hidden');
@@ -263,9 +231,72 @@
             stickyFooter.classList.add('hidden');
             cameraInput.value = '';
             galleryInput.value = '';
+        }
+
+        // --- FONCTION D'AFFICHAGE ---
+        function populateResults(data) {
+            document.getElementById('resTitle').innerText = data.titre;
+            document.getElementById('resPrice').innerText = data.prix;
+            document.getElementById('resCat').innerText = data.categorie;
+            document.getElementById('resDesc').innerText = data.description;
+            
+            const tagsHTML = data.hashtags.split(' ')
+                .filter(t => t.length > 1)
+                .map(tag => `<span class="bg-indigo-50 px-2 py-1 rounded-lg">#${tag.replace('#','')}</span>`)
+                .join('');
+            document.getElementById('resTags').innerHTML = tagsHTML;
+
+            fullDescriptionToCopy = `${data.description}\n\n${data.hashtags}`;
+        }
+
+        // --- LOGIQUE STANDARD ---
+        function toggleInstallModal() {
+            installModal.classList.toggle('hidden');
+        }
+        installModal.addEventListener('click', (e) => {
+            if (e.target === installModal) toggleInstallModal();
         });
 
-        // --- FONCTIONS DE COPIE ---
+        function compressImage(file, callback) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800;
+                    const scaleSize = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    callback(canvas.toDataURL('image/jpeg', 0.7));
+                };
+            };
+        }
+
+        function handleFile(file) {
+            if (file) {
+                clearState(); // On nettoie si on met une nouvelle photo
+                placeholder.innerHTML = '<p class="text-gray-400 text-xs">Optimisation...</p>';
+                compressImage(file, (base64) => {
+                    preview.src = base64;
+                    preview.classList.remove('hidden');
+                    resetBtn.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                    placeholder.innerHTML = '';
+                    choiceButtons.classList.add('hidden');
+                    analyzeBtn.classList.remove('hidden');
+                    compressedImageBase64 = base64;
+                });
+            }
+        }
+
+        cameraInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+        galleryInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+        resetBtn.addEventListener('click', clearState); // Le bouton X vide tout
+
         function copyText(elementId, message) {
             const text = document.getElementById(elementId).innerText;
             navigator.clipboard.writeText(text).then(() => {
@@ -294,7 +325,6 @@
             });
         }
 
-        // --- APPEL API ---
         analyzeBtn.addEventListener('click', async () => {
             if (!compressedImageBase64) return;
             analyzeBtn.disabled = true; 
@@ -309,21 +339,10 @@
                 const data = await response.json();
                 if (!response.ok || data.error) throw new Error(data.error || "Erreur inconnue");
 
-                // Remplissage des données
-                document.getElementById('resTitle').innerText = data.titre;
-                document.getElementById('resPrice').innerText = data.prix;
-                document.getElementById('resCat').innerText = data.categorie;
-                document.getElementById('resDesc').innerText = data.description;
+                populateResults(data);
                 
-                // Formatage des hashtags
-                const tagsHTML = data.hashtags.split(' ')
-                    .filter(t => t.length > 1)
-                    .map(tag => `<span class="bg-indigo-50 px-2 py-1 rounded-lg">#${tag.replace('#','')}</span>`)
-                    .join('');
-                document.getElementById('resTags').innerHTML = tagsHTML;
-
-                // Préparation du texte complet pour le bouton final
-                fullDescriptionToCopy = `${data.description}\n\n${data.hashtags}`;
+                // SAUVEGARDE EN MÉMOIRE
+                saveState(data, compressedImageBase64);
 
                 resultDiv.classList.remove('hidden');
                 stickyFooter.classList.remove('hidden');
