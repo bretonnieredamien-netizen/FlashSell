@@ -6,10 +6,9 @@
     <title>FlashSell</title>
     <meta name="description" content="Génère tes annonces Vinted en 3 secondes.">
 
-    <script>
-      window.va = window.va || function () { (window.va.q = window.va.q || []).push(arguments); };
-    </script>
+    <script>window.va = window.va || function () { (window.va.q = window.va.q || []).push(arguments); };</script>
     <script defer src="/_vercel/insights/script.js"></script>
+
     <link rel="manifest" href="/manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -33,15 +32,13 @@
         .modal-backdrop { background-color: rgba(0,0,0,0.6); backdrop-filter: blur(2px); }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col items-center justify-center p-4 pb-24">
-
-    <div class="bg-white w-full max-w-[500px] rounded-[2rem] shadow-xl overflow-hidden border border-gray-100 relative">
+<body class="bg-gray-50 min-h-screen flex flex-col items-center justify-center p-4 pb-32"> <div class="bg-white w-full max-w-[500px] rounded-[2rem] shadow-xl overflow-hidden border border-gray-100 relative">
         
         <div class="pt-8 pb-4 text-center px-6">
             <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">
                 ⚡ Flash<span class="text-indigo-600">Sell</span>
             </h1>
-            <p class="text-gray-400 text-sm mt-2 font-medium">Boost tes ventes Vinted</p>
+            <p class="text-gray-400 text-sm mt-2 font-medium">Boost tes ventes Vinted & FB</p>
         </div>
 
         <div class="p-6 space-y-6">
@@ -99,11 +96,18 @@
             </div>
         </div>
 
-        <div id="stickyFooter" class="hidden fixed bottom-6 left-4 right-4 max-w-[468px] mx-auto z-50 fade-in">
-            <button onclick="copyAndGo()" class="w-full bg-[#09B1BA] hover:bg-[#0799a1] text-white font-bold py-4 rounded-2xl shadow-2xl flex items-center justify-center gap-2 transform active:scale-95 transition ring-4 ring-white">
+        <div id="stickyFooter" class="hidden fixed bottom-6 left-4 right-4 max-w-[468px] mx-auto z-50 fade-in flex flex-col gap-3">
+            
+            <button onclick="copyAndGoVinted()" class="w-full bg-[#09B1BA] hover:bg-[#0799a1] text-white font-bold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transform active:scale-95 transition ring-2 ring-white">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
-                <span>Copier Tout & Ouvrir Vinted</span>
+                <span>Copier & Vinted</span>
             </button>
+
+            <button onclick="copyAndGoFacebook()" class="w-full bg-[#1877F2] hover:bg-[#166fe5] text-white font-bold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 transform active:scale-95 transition ring-2 ring-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.791-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                <span>Copier & Facebook</span>
+            </button>
+
         </div>
 
         <div id="installModal" class="hidden fixed inset-0 modal-backdrop z-[100] flex items-end sm:items-center justify-center p-4">
@@ -223,12 +227,23 @@
                 Toastify({ text: message, duration: 2000, gravity: "top", position: "center", style: { background: "#4f46e5", borderRadius: "10px", fontSize: "12px", fontWeight: "bold" } }).showToast();
             });
         }
-        function copyAndGo() {
+        
+        // FONCTION COPIER VINTED
+        function copyAndGoVinted() {
             navigator.clipboard.writeText(fullDescriptionToCopy).then(() => {
                 Toastify({ text: "Copié ! Ouverture de Vinted...", duration: 3000, gravity: "bottom", position: "center", style: { background: "#09B1BA", borderRadius: "10px" } }).showToast();
                 setTimeout(() => { window.open('https://www.vinted.fr/items/new', '_blank'); }, 800);
             });
         }
+
+        // FONCTION COPIER FACEBOOK
+        function copyAndGoFacebook() {
+            navigator.clipboard.writeText(fullDescriptionToCopy).then(() => {
+                Toastify({ text: "Copié ! Ouverture de Facebook...", duration: 3000, gravity: "bottom", position: "center", style: { background: "#1877F2", borderRadius: "10px" } }).showToast();
+                setTimeout(() => { window.open('https://www.facebook.com/marketplace/create', '_blank'); }, 800);
+            });
+        }
+
         analyzeBtn.addEventListener('click', async () => {
             if (!compressedImageBase64) return;
             analyzeBtn.disabled = true; analyzeBtn.innerHTML = '<div class="loader"></div>';
